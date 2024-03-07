@@ -1,0 +1,49 @@
+{
+  "project_info": {
+    "project_number": "461052837961",
+    "firebase_url": "https://azn-flutter-app-default-rtdb.firebaseio.com",
+    "project_id": "azn-flutter-app",
+    "storage_bucket": "azn-flutter-app.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:461052837961:android:be1f15dd84dd5ea99aff98",
+        "android_client_info": {
+          "package_name": "com.example.azn_hollyfood_flutter_app"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyBfddJC_FU7o3tvIn-GDRK-9ArHK0XH6z8"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    },
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:461052837961:android:0c76c35dd452d3c79aff98",
+        "android_client_info": {
+          "package_name": "com.example.azn_tasks_app"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyBfddJC_FU7o3tvIn-GDRK-9ArHK0XH6z8"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
