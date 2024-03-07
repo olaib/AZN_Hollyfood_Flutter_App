@@ -1,24 +1,67 @@
+import 'package:azn_hollyfood_flutter_app/providers/gsheets_provider.dart';
 import 'package:get_it/get_it.dart';
 import 'package:flutter/material.dart';
-import 'package:provider/provider.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:azn_hollyfood_flutter_app/utils/log.dart';
+import 'package:azn_hollyfood_flutter_app/utils/constants.dart';
 import 'package:azn_hollyfood_flutter_app/configuration/firebase_options.dart';
 import 'package:azn_hollyfood_flutter_app/services/database_services.dart';
-import 'package:azn_hollyfood_flutter_app/models/user_entity.dart';
+import 'package:azn_hollyfood_flutter_app/providers/navigation_service.dart';
+// ignore: depend_on_referenced_packages
+import 'package:flutter_dotenv/flutter_dotenv.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   await Firebase.initializeApp(
     options: DefaultFirebaseOptions.currentPlatform,
   )
-      .then((value) => Log.debug('Firebase initialized'))
+      .then((_) => Log.debug('Firebase initialized'))
+      .then((_) async => await dotenv.load())
+      .then((_) => _setup())
       .then((value) => runApp(const MyApp()))
-      .catchError((error) => Log.error('Error initializing Firebase: $error'));
+      .catchError((error) => Log.error('Error initializing App: $error'));
 }
 
 void _setup() {
+  GetIt.I.registerSingleton<NavigationService>(NavigationService());
+  GetIt.instance.registerSingleton<DataBaseService>(DataBaseService());
+  if (dotenv.env.isEmpty) {
+    throw Exception('No .env file found or empty');
+  }
+  final requiredKeys = {
+    SPREADSHEET_ID,
+    PROJECT_ID,
+    PRIVATE_KEY_ID,
+    PRIVATE_KEY,
+    CLIENT_EMAIL,
+    CLIENT_ID,
+  };
 
+  for (String key in requiredKeys) {
+    if (dotenv.env[key]!.isEmpty) {
+      throw Exception('The value of $key is empty');
+    }
+  }
+
+  final Map<String, String> credintial = {
+    "type": "service_account",
+    "project_id": dotenv.env[PROJECT_ID]!,
+    "private_key_id": dotenv.env[PRIVATE_KEY_ID]!,
+    "private_key": dotenv.env[PRIVATE_KEY]!,
+    "client_email": dotenv.env[CLIENT_EMAIL]!,
+    "client_id": dotenv.env[CLIENT_ID]!,
+    "auth_uri": AUTH_URL,
+    "token_uri": TOKEN_URL,
+    "auth_provider_x509_cert_url": AUTH_PROVIDER_X509_CERT_URL,
+    "client_x509_cert_url": CLIENT_X509_CERT_URL,
+    "universe_domain": UNIVERSE_DOMAIN,
+  };
+  const String sheetId = SPREADSHEET_ID;
+
+  GetIt.instance.registerSingleton<GSheetsProvider>(GSheetsProvider(
+    sheetId: sheetId,
+    credintial: credintial,
+  ));
 }
 
 class MyApp extends StatelessWidget {
