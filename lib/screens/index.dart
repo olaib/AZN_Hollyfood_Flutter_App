@@ -1,0 +1,20 @@
+// admin
+export 'admin/admin_login.dart';
+export 'admin/admin_panel.dart';
+// appManager
+export 'appManager/app_manager_login.dart';
+export 'appManager/manage_app.dart';
+export 'appManager/users_table.dart';
+// users
+export 'users/home.dart';
+export 'users/login_screen.dart';
+// products
+export 'products/inventory.dart';
+export 'products/production.dart';
+export 'products/sales.dart';
+export 'products/sales_analysis.dart';
+export 'products/purchase.dart';
+export 'products/purchases.dart';
+// ================================ //
+export 'error_screen.dart';
+export 'welcome_screen.dart';

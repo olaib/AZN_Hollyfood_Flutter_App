@@ -10,6 +10,14 @@ const PRIVATE_KEY = 'PRIVATE_KEY';
 const CLIENT_EMAIL = 'CLIENT_EMAIL';
 const CLIENT_ID = 'CLIENT_ID';
 const SPREADSHEET_ID = 'SHEET_ID';
+const CREDINTIAL_PRIVATE_KETS = {
+  'project_id': PROJECT_ID,
+  'private_key_id': PRIVATE_KEY_ID,
+  'private_key': PRIVATE_KEY,
+  'client_email': CLIENT_EMAIL,
+  'client_id': CLIENT_ID,
+};
+
 //============= Google Sheets Credentials ==============
 const String AUTH_URL = 'https://accounts.google.com/o/oauth2/auth';
 const String TOKEN_URL = 'https://oauth2.googleapis.com/token';
@@ -22,6 +30,16 @@ const String G_SHEETS_MISSING_CREDENTIALS_OR_SPREADSHEET_ID =
 const String CLIENT_X509_CERT_URL =
     "https://www.googleapis.com/robot/v1/metadata/x509/flutter-gsheets-azn%40applied-primacy-415108.iam.gserviceaccount.com";
 const String UNIVERSE_DOMAIN = "googleapis.com";
+const CREDINTAL_KEYS = {
+  'type': SERVICE_ACCOUNT,
+  'auth_uri': AUTH_URL,
+  'token_uri': TOKEN_URL,
+  'auth_provider_x509_cert_url': AUTH_PROVIDER_X509_CERT_URL,
+  'client_x509_cert_url': CLIENT_X509_CERT_URL,
+  'universe_domain': UNIVERSE_DOMAIN,
+};
+// gsheets sheets
+const String USERS_SPREADSHEET_NAME = 'test';
 // ==========================================================================================================
 const String WELCOME_BACK = 'ברוך הבא 👋';
 const String SIGN_IN_TO_CONTINUE = 'התחבר כדי להמשיך';
@@ -92,3 +110,19 @@ const Map<String, String> LOGIN_MESSAGES = {
 };
 
 const String USER_HINT_TEXT = 'שם משתמש', PASSWORD_HINT_TEXT = 'סיסמה';
+// ================ Collections =================
+const String USERS_COLLECTION = 'users';
+const String DEPARTMENTS_COLLECTION = 'departments';
+const String PRODUCTS_COLLECTION = 'products';
+
+
+
+const USER_TABLE_HEADERS = [
+  '#',
+  ' יוזרנים',
+  'סיסמה',
+  'מחלקה',
+  'סטטוס',
+  'זמן סטטוס אחרון',
+  'תקופת סטטוס'
+];

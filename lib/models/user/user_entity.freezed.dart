@@ -25,8 +25,9 @@ mixin _$UserEntity {
   String get password => throw _privateConstructorUsedError;
   bool get isAdmin => throw _privateConstructorUsedError;
   bool get isAuthenticated => throw _privateConstructorUsedError;
-  String get department => throw _privateConstructorUsedError;
-  String get status => throw _privateConstructorUsedError;
+  @JsonKey(fromJson: Department.fromJson)
+  Department get department => throw _privateConstructorUsedError;
+  Status get status => throw _privateConstructorUsedError;
   int get rowNumber => throw _privateConstructorUsedError;
   dynamic get lastStatusTime => throw _privateConstructorUsedError;
   dynamic get lastActive => throw _privateConstructorUsedError;
@@ -52,14 +53,17 @@ abstract class $UserEntityCopyWith<$Res> {
       String password,
       bool isAdmin,
       bool isAuthenticated,
-      String department,
-      String status,
+      @JsonKey(fromJson: Department.fromJson) Department department,
+      Status status,
       int rowNumber,
       dynamic lastStatusTime,
       dynamic lastActive,
       dynamic createdAt,
       dynamic updatedAt,
       int timePeriodStatus});
+
+  $DepartmentCopyWith<$Res> get department;
+  $StatusCopyWith<$Res> get status;
 }
 
 /// @nodoc
@@ -113,11 +117,11 @@ class _$UserEntityCopyWithImpl<$Res, $Val extends UserEntity>
       department: null == department
           ? _value.department
           : department // ignore: cast_nullable_to_non_nullable
-              as String,
+              as Department,
       status: null == status
           ? _value.status
           : status // ignore: cast_nullable_to_non_nullable
-              as String,
+              as Status,
       rowNumber: null == rowNumber
           ? _value.rowNumber
           : rowNumber // ignore: cast_nullable_to_non_nullable
@@ -144,6 +148,22 @@ class _$UserEntityCopyWithImpl<$Res, $Val extends UserEntity>
               as int,
     ) as $Val);
   }
+
+  @override
+  @pragma('vm:prefer-inline')
+  $DepartmentCopyWith<$Res> get department {
+    return $DepartmentCopyWith<$Res>(_value.department, (value) {
+      return _then(_value.copyWith(department: value) as $Val);
+    });
+  }
+
+  @override
+  @pragma('vm:prefer-inline')
+  $StatusCopyWith<$Res> get status {
+    return $StatusCopyWith<$Res>(_value.status, (value) {
+      return _then(_value.copyWith(status: value) as $Val);
+    });
+  }
 }
 
 /// @nodoc
@@ -160,14 +180,19 @@ abstract class _$$UserEntityImplCopyWith<$Res>
       String password,
       bool isAdmin,
       bool isAuthenticated,
-      String department,
-      String status,
+      @JsonKey(fromJson: Department.fromJson) Department department,
+      Status status,
       int rowNumber,
       dynamic lastStatusTime,
       dynamic lastActive,
       dynamic createdAt,
       dynamic updatedAt,
       int timePeriodStatus});
+
+  @override
+  $DepartmentCopyWith<$Res> get department;
+  @override
+  $StatusCopyWith<$Res> get status;
 }
 
 /// @nodoc
@@ -219,11 +244,11 @@ class __$$UserEntityImplCopyWithImpl<$Res>
       department: null == department
           ? _value.department
           : department // ignore: cast_nullable_to_non_nullable
-              as String,
+              as Department,
       status: null == status
           ? _value.status
           : status // ignore: cast_nullable_to_non_nullable
-              as String,
+              as Status,
       rowNumber: null == rowNumber
           ? _value.rowNumber
           : rowNumber // ignore: cast_nullable_to_non_nullable
@@ -243,20 +268,20 @@ class __$$UserEntityImplCopyWithImpl<$Res>
 
 /// @nodoc
 @JsonSerializable()
-class _$UserEntityImpl with DiagnosticableTreeMixin implements _UserEntity {
+class _$UserEntityImpl implements _UserEntity {
   _$UserEntityImpl(
       {this.uid = '',
       required this.username,
       required this.password,
       this.isAdmin = false,
       this.isAuthenticated = false,
-      required this.department,
-      this.status = 'בחוץ',
+      @JsonKey(fromJson: Department.fromJson) required this.department,
+      required this.status,
       required this.rowNumber,
-      this.lastStatusTime = Timestamp.now,
-      this.lastActive = Timestamp.now,
-      this.createdAt = Timestamp.now,
-      this.updatedAt = Timestamp.now,
+      this.lastStatusTime = DateTime.now,
+      this.lastActive = DateTime.now,
+      this.createdAt = DateTime.now,
+      this.updatedAt = DateTime.now,
       this.timePeriodStatus = 0});
 
   factory _$UserEntityImpl.fromJson(Map<String, dynamic> json) =>
@@ -276,10 +301,10 @@ class _$UserEntityImpl with DiagnosticableTreeMixin implements _UserEntity {
   @JsonKey()
   final bool isAuthenticated;
   @override
-  final String department;
+  @JsonKey(fromJson: Department.fromJson)
+  final Department department;
   @override
-  @JsonKey()
-  final String status;
+  final Status status;
   @override
   final int rowNumber;
   @override
@@ -299,28 +324,8 @@ class _$UserEntityImpl with DiagnosticableTreeMixin implements _UserEntity {
   final int timePeriodStatus;
 
   @override
-  String toString({DiagnosticLevel minLevel = DiagnosticLevel.info}) {
+  String toString() {
     return 'UserEntity(uid: $uid, username: $username, password: $password, isAdmin: $isAdmin, isAuthenticated: $isAuthenticated, department: $department, status: $status, rowNumber: $rowNumber, lastStatusTime: $lastStatusTime, lastActive: $lastActive, createdAt: $createdAt, updatedAt: $updatedAt, timePeriodStatus: $timePeriodStatus)';
-  }
-
-  @override
-  void debugFillProperties(DiagnosticPropertiesBuilder properties) {
-    super.debugFillProperties(properties);
-    properties
-      ..add(DiagnosticsProperty('type', 'UserEntity'))
-      ..add(DiagnosticsProperty('uid', uid))
-      ..add(DiagnosticsProperty('username', username))
-      ..add(DiagnosticsProperty('password', password))
-      ..add(DiagnosticsProperty('isAdmin', isAdmin))
-      ..add(DiagnosticsProperty('isAuthenticated', isAuthenticated))
-      ..add(DiagnosticsProperty('department', department))
-      ..add(DiagnosticsProperty('status', status))
-      ..add(DiagnosticsProperty('rowNumber', rowNumber))
-      ..add(DiagnosticsProperty('lastStatusTime', lastStatusTime))
-      ..add(DiagnosticsProperty('lastActive', lastActive))
-      ..add(DiagnosticsProperty('createdAt', createdAt))
-      ..add(DiagnosticsProperty('updatedAt', updatedAt))
-      ..add(DiagnosticsProperty('timePeriodStatus', timePeriodStatus));
   }
 
   @override
@@ -381,6 +386,11 @@ class _$UserEntityImpl with DiagnosticableTreeMixin implements _UserEntity {
       this,
     );
   }
+
+  @override
+  Map<String, dynamic> toDocument() {
+    return _$$UserEntityImplToJson(this)..remove('uid');
+  }
 }
 
 abstract class _UserEntity implements UserEntity {
@@ -390,8 +400,9 @@ abstract class _UserEntity implements UserEntity {
       required final String password,
       final bool isAdmin,
       final bool isAuthenticated,
-      required final String department,
-      final String status,
+      @JsonKey(fromJson: Department.fromJson)
+      required final Department department,
+      required final Status status,
       required final int rowNumber,
       final dynamic lastStatusTime,
       final dynamic lastActive,
@@ -413,9 +424,10 @@ abstract class _UserEntity implements UserEntity {
   @override
   bool get isAuthenticated;
   @override
-  String get department;
+  @JsonKey(fromJson: Department.fromJson)
+  Department get department;
   @override
-  String get status;
+  Status get status;
   @override
   int get rowNumber;
   @override
