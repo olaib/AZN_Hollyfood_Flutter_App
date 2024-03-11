@@ -13,14 +13,13 @@ _$UserEntityImpl _$$UserEntityImplFromJson(Map<String, dynamic> json) =>
       password: json['password'] as String,
       isAdmin: json['isAdmin'] as bool? ?? false,
       isAuthenticated: json['isAuthenticated'] as bool? ?? false,
-      department:
-          Department.fromJson(json['department'] as Map<String, dynamic>),
-      status: Status.fromJson(json['status'] as Map<String, dynamic>),
+      department: json['department'] as String,
+      status: json['status'] as String? ?? 'בחוץ',
       rowNumber: json['rowNumber'] as int,
-      lastStatusTime: json['lastStatusTime'] ?? DateTime.now,
-      lastActive: json['lastActive'] ?? DateTime.now,
-      createdAt: json['createdAt'] ?? DateTime.now,
-      updatedAt: json['updatedAt'] ?? DateTime.now,
+      lastStatusTime: json['lastStatusTime'] ?? Timestamp.now,
+      lastActive: json['lastActive'] ?? Timestamp.now,
+      createdAt: json['createdAt'] ?? Timestamp.now,
+      updatedAt: json['updatedAt'] ?? Timestamp.now,
       timePeriodStatus: json['timePeriodStatus'] as int? ?? 0,
     );
 

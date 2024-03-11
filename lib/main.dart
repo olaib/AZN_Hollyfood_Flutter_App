@@ -1,22 +1,14 @@
-import 'package:azn_hollyfood_flutter_app/controllers/user_controller.dart';
 import 'package:azn_hollyfood_flutter_app/providers/gsheets_provider.dart';
-import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:get_it/get_it.dart';
 import 'package:flutter/material.dart';
 import 'package:firebase_core/firebase_core.dart';
-// ignore: depend_on_referenced_packages
-import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:azn_hollyfood_flutter_app/utils/log.dart';
 import 'package:azn_hollyfood_flutter_app/utils/constants.dart';
 import 'package:azn_hollyfood_flutter_app/configuration/firebase_options.dart';
 import 'package:azn_hollyfood_flutter_app/services/database_services.dart';
-import 'package:azn_hollyfood_flutter_app/services/navigation_service.dart';
-import 'package:azn_hollyfood_flutter_app/screens/index.dart';
-import 'package:azn_hollyfood_flutter_app/providers/theme_provider.dart';
-import 'package:azn_hollyfood_flutter_app/providers/authentication_provider.dart';
-import 'package:provider/provider.dart';
-import 'package:azn_hollyfood_flutter_app/utils/theme_data.dart';
-import 'package:azn_hollyfood_flutter_app/screens/products/table.dart';
+import 'package:azn_hollyfood_flutter_app/providers/navigation_service.dart';
+// ignore: depend_on_referenced_packages
+import 'package:flutter_dotenv/flutter_dotenv.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -32,127 +24,162 @@ void main() async {
 
 void _setup() {
   GetIt.I.registerSingleton<NavigationService>(NavigationService());
-  GetIt.instance.registerLazySingleton(() => FirebaseFirestore.instance);
-  GetIt.I
-      .registerLazySingleton(() => UserController(db: GetIt.I<FirebaseFirestore>()));
-
-  GetIt.I.registerSingleton<DataBaseService>(DataBaseService());
-  Log.debug('DataBaseService initialized');
+  GetIt.instance.registerSingleton<DataBaseService>(DataBaseService());
   if (dotenv.env.isEmpty) {
     throw Exception('No .env file found or empty');
   }
-  Log.debug('loading credintial from .env');
-
-  final Map<String, String> credintial = {
-    ...CREDINTIAL_PRIVATE_KETS.map((key, value) {
-      if (value.isEmpty) {
-        throw Exception('The value of $key is empty');
-      } else {
-        return MapEntry(key, dotenv.env[value]!);
-      }
-    }),
-    ...CREDINTAL_KEYS
+  final requiredKeys = {
+    SPREADSHEET_ID,
+    PROJECT_ID,
+    PRIVATE_KEY_ID,
+    PRIVATE_KEY,
+    CLIENT_EMAIL,
+    CLIENT_ID,
   };
 
-  final String sheetId = dotenv.env[SPREADSHEET_ID]!;
-  Log.debug('credintial loaded and sheetId loaded');
+  for (String key in requiredKeys) {
+    if (dotenv.env[key]!.isEmpty) {
+      throw Exception('The value of $key is empty');
+    }
+  }
 
-  GetIt.I.registerSingleton<GSheetsProvider>(GSheetsProvider(
+  final Map<String, String> credintial = {
+    "type": "service_account",
+    "project_id": dotenv.env[PROJECT_ID]!,
+    "private_key_id": dotenv.env[PRIVATE_KEY_ID]!,
+    "private_key": dotenv.env[PRIVATE_KEY]!,
+    "client_email": dotenv.env[CLIENT_EMAIL]!,
+    "client_id": dotenv.env[CLIENT_ID]!,
+    "auth_uri": AUTH_URL,
+    "token_uri": TOKEN_URL,
+    "auth_provider_x509_cert_url": AUTH_PROVIDER_X509_CERT_URL,
+    "client_x509_cert_url": CLIENT_X509_CERT_URL,
+    "universe_domain": UNIVERSE_DOMAIN,
+  };
+  const String sheetId = SPREADSHEET_ID;
+
+  GetIt.instance.registerSingleton<GSheetsProvider>(GSheetsProvider(
     sheetId: sheetId,
     credintial: credintial,
   ));
-  GetIt.I.registerSingleton<AuthenticationProvider>(AuthenticationProvider());
-  Log.debug('GSheetsProvider initialized');
-  GetIt.I.registerSingleton<ThemeProvider>(ThemeProvider());
-  Log.debug('ThemeProvider initialized');
-  Log.debug('App setup completed');
 }
 
-class MyApp extends StatefulWidget {
+class MyApp extends StatelessWidget {
   const MyApp({super.key});
 
-  @override
-  State<MyApp> createState() => _MyAppState();
-}
-
-class _MyAppState extends State<MyApp> {
-  late Size screenSize;
-  static final Map<Routes, Widget> _rootToWidget = {
-    Routes.initialRoute:
-        const WelcomeScreen(title: APP_NAME, welcomeMessage: WELCOME_TEXT),
-    Routes.login: const LoginScreen(),
-    Routes.home: const HomeScreen(),
-    Routes.adminLogin: const AdminLoginScreen(),
-    Routes.adminPanel: const AdminPanel(),
-    Routes.manageAppLogin: const AppManagerLoginScreen(),
-    Routes.manageApp: const ManageApp(),
-    Routes.usersTable: const UsersTable(),
-    Routes.sales: const SalesScreen(),
-    Routes.makeSales: const ProductsTable(title: 'ביצוע מכירה'),
-    // Routes.salesAnalysis: SalesAnalysisScreen(),
-    // Routes.purchase: PurchasesScreen(title: 'רכישות', onSelect: (dynamic product) {}),
-    Routes.purchase: const ProductsTable(title: 'רכישה'),
-    Routes.productsTable: const ProductsTable(title: 'מוצרים'),
-    Routes.error: const ErrorScreen(),
-  };
-
+  // This widget is the root of your application.
   @override
   Widget build(BuildContext context) {
-    screenSize = MediaQuery.of(context).size;
-    // init providers for the app
-    return MultiProvider(
-      providers: [
-        ChangeNotifierProvider(create: (context) => ThemeProvider()),
-        ChangeNotifierProvider(create: (context) => AuthenticationProvider()),
-      ],
-      child: Consumer<ThemeProvider>(
-        builder: (context, themeProvider, child) {
-          return MaterialApp(
-            title: APP_NAME,
-            navigatorKey: NavigationService.navigatorKey,
-            // theme: Styles.themeData(isDarkMode: themeProvider.isDarkMode, context: context),
-            theme: themeProvider.isDarkMode ? darkMode : lightMode,
-            home: _rootToWidget[Routes.initialRoute]!,
-            initialRoute: Routes.initialRoute.url,
-            onGenerateRoute: (RouteSettings settings) {
-              final route = settings.name;
-              final routeToEnum =
-                  _rootToWidget.keys.firstWhere((key) => key.url == route);
-              Log.info('routeToEnum: $routeToEnum');
-              final widget =
-                  _rootToWidget[routeToEnum] ?? _rootToWidget[Routes.error];
-              return MyCustomRoute(
-                builder: (_) => widget!,
-                settings: settings,
-              );
-            },
-            onUnknownRoute: (settings) {
-              return MaterialPageRoute(
-                builder: (context) => const ErrorScreen(),
-              );
-            },
-          );
-        },
+    return MaterialApp(
+      title: 'Flutter Demo',
+      theme: ThemeData(
+        // This is the theme of your application.
+        //
+        // TRY THIS: Try running your application with "flutter run". You'll see
+        // the application has a purple toolbar. Then, without quitting the app,
+        // try changing the seedColor in the colorScheme below to Colors.green
+        // and then invoke "hot reload" (save your changes or press the "hot
+        // reload" button in a Flutter-supported IDE, or press "r" if you used
+        // the command line to start the app).
+        //
+        // Notice that the counter didn't reset back to zero; the application
+        // state is not lost during the reload. To reset the state, use hot
+        // restart instead.
+        //
+        // This works for code too, not just values: Most code changes can be
+        // tested with just a hot reload.
+        colorScheme: ColorScheme.fromSeed(seedColor: Colors.deepPurple),
+        useMaterial3: true,
       ),
+      home: const MyHomePage(title: 'Flutter Demo Home Page'),
     );
   }
 }
 
-class MyCustomRoute<T> extends MaterialPageRoute<T> {
-  MyCustomRoute(
-      {required super.builder, required RouteSettings super.settings});
+class MyHomePage extends StatefulWidget {
+  const MyHomePage({super.key, required this.title});
+
+  // This widget is the home page of your application. It is stateful, meaning
+  // that it has a State object (defined below) that contains fields that affect
+  // how it looks.
+
+  // This class is the configuration for the state. It holds the values (in this
+  // case the title) provided by the parent (in this case the App widget) and
+  // used by the build method of the State. Fields in a Widget subclass are
+  // always marked "final".
+
+  final String title;
 
   @override
-  Duration get transitionDuration => const Duration(milliseconds: 1000);
+  State<MyHomePage> createState() => _MyHomePageState();
+}
+
+class _MyHomePageState extends State<MyHomePage> {
+  int _counter = 0;
+
+  void _incrementCounter() {
+    setState(() {
+      // This call to setState tells the Flutter framework that something has
+      // changed in this State, which causes it to rerun the build method below
+      // so that the display can reflect the updated values. If we changed
+      // _counter without calling setState(), then the build method would not be
+      // called again, and so nothing would appear to happen.
+      _counter++;
+    });
+  }
 
   @override
-  Widget buildTransitions(BuildContext context, Animation<double> animation,
-      Animation<double> secondaryAnimation, Widget child) {
-    Log.debug('settings.name: ${settings.name}');
-    if (settings.name == Routes.initialRoute.url) {
-      return child;
-    }
-
-    return FadeTransition(opacity: animation, child: child);
+  Widget build(BuildContext context) {
+    // This method is rerun every time setState is called, for instance as done
+    // by the _incrementCounter method above.
+    //
+    // The Flutter framework has been optimized to make rerunning build methods
+    // fast, so that you can just rebuild anything that needs updating rather
+    // than having to individually change instances of widgets.
+    return Scaffold(
+      appBar: AppBar(
+        // TRY THIS: Try changing the color here to a specific color (to
+        // Colors.amber, perhaps?) and trigger a hot reload to see the AppBar
+        // change color while the other colors stay the same.
+        backgroundColor: Theme.of(context).colorScheme.inversePrimary,
+        // Here we take the value from the MyHomePage object that was created by
+        // the App.build method, and use it to set our appbar title.
+        title: Text(widget.title),
+      ),
+      body: Center(
+        // Center is a layout widget. It takes a single child and positions it
+        // in the middle of the parent.
+        child: Column(
+          // Column is also a layout widget. It takes a list of children and
+          // arranges them vertically. By default, it sizes itself to fit its
+          // children horizontally, and tries to be as tall as its parent.
+          //
+          // Column has various properties to control how it sizes itself and
+          // how it positions its children. Here we use mainAxisAlignment to
+          // center the children vertically; the main axis here is the vertical
+          // axis because Columns are vertical (the cross axis would be
+          // horizontal).
+          //
+          // TRY THIS: Invoke "debug painting" (choose the "Toggle Debug Paint"
+          // action in the IDE, or press "p" in the console), to see the
+          // wireframe for each widget.
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: <Widget>[
+            const Text(
+              'You have pushed the button this many times:',
+            ),
+            Text(
+              '$_counter',
+              style: Theme.of(context).textTheme.headlineMedium,
+            ),
+          ],
+        ),
+      ),
+      floatingActionButton: FloatingActionButton(
+        onPressed: _incrementCounter,
+        tooltip: 'Increment',
+        child: const Icon(Icons.add),
+      ), // This trailing comma makes auto-formatting nicer for build methods.
+    );
   }
 }
